@@ -6,7 +6,7 @@
 * library_credentials.lua - Domoticz credentials
 
 ### Heating (PID, scheduling ...)
-* script_device_chauffage.lua.lua
+* script_device_chauffage.lua
 * script_time_chauffage_chambre_consigne.lua
 * script_time_chauffage_salon_auto.lua
 * script_time_chauffage_salon_pid.lua
