@@ -20,14 +20,11 @@
 ### Presence detection (ping)
 * script_time_presence_ping.lua
 
-### Variables
-* script_variable_all.lua
-
 ### Lamp color change
 * script_time_color_change.lua
 
-### EDF heures creuses/pleines
-* script_device_edf_hc_hp.lua
+### Battery check
+* script_time_batterie.lua
 
 ### Remote control (Mini RF Wireless Led Dimmer Controller)
 * script_device_telecommande.lua
@@ -35,5 +32,8 @@
 ### Text to speech
 * script_device_tts.lua
 
-### Battery check
-* script_time_batterie.lua
+### EDF heures creuses/pleines
+* script_device_edf_hc_hp.lua
+
+### Variables
+* script_variable_all.lua
