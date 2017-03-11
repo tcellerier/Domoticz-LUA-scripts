@@ -29,7 +29,7 @@
 ### EDF heures creuses/pleines
 * script_device_edf_hc_hp.lua
 
-### Remote controle
+### Remote control (Mini RF Wireless Led Dimmer Controller)
 * script_device_telecommande.lua
 
 ### Text to speech
