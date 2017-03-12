@@ -16,12 +16,12 @@ require("library")
 -----------------
 -- Variables  --
 -----------------
-delay_minutes = 20 -- Valeur conseillée : 20 en modePresence 3, 11 en modePrésence 2
+delay_minutes = 12 -- Valeur conseillée : 20 en modePresence 3, 11 en modePrésence 2
 
 -- Deux modes possibles :
 --    3 => ne se base que sur le ping pour détecter une présence. 3 états : a. présent, b. présent mais on essaye de pinger, c. non présent
 --    2 => Passe immédiatement d'un état de présence à un état de non présence. Utile avec le script de détection continue d'adresse MAC par exemple (python)
-modePresence = '3'
+modePresence = '2'
 
 -----------------
 
@@ -56,9 +56,12 @@ if (time_inminutes >= 10 * 60 - 1) then
         -- Présence = 0 après 'delai_minutes' depuis le dernier évènement de présence
         if (uservariables['Script_Presence_Maison'] == 1 and timedifference(uservariables_lastupdate['Script_Presence_Maison']) >= delay_minutes * 60) then
             commandArray['Variable:Script_Presence_Maison'] = "0"
+        end
     
     else -- Si pb dans le choix du mode, on passe en mode "non présent" en permanence
-        commandArray['Variable:Script_Presence_Maison'] = "0"
+        if (uservariables['Script_Presence_Maison'] ~= 0) then
+            commandArray['Variable:Script_Presence_Maison'] = "0"
+        end
     end
 
 
@@ -111,10 +114,9 @@ if (time_inminutes >= 10 * 60 - 1) then
 
 -- Entre minnuit et 10h -> on désactive la présence
 else
-    if uservariables['Script_Presence_Maison'] ~= 0 then
+    if (uservariables['Script_Presence_Maison'] ~= 0) then
         commandArray['Variable:Script_Presence_Maison'] = "0"
     end
 end
 
 return commandArray
-
