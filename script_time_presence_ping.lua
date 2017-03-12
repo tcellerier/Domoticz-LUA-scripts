@@ -16,7 +16,7 @@ require("library")
 -----------------
 -- Variables  --
 -----------------
-delay_minutes = 12 -- Valeur conseillée : 20 en modePresence 3, 11 en modePrésence 2
+delay_minutes = 12 -- Valeur conseillée : 20 en modePresence 3, 11 en modePrésence 2. ATTENTION : A mettre à jour également dans dashboard.js
 
 -- Deux modes possibles :
 --    3 => ne se base que sur le ping pour détecter une présence. 3 états : a. présent, b. présent mais on essaye de pinger, c. non présent
