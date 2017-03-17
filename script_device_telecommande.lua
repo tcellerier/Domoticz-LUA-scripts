@@ -48,10 +48,10 @@ elseif (devicechanged['Telecommande Demo'] == 'On') then
 elseif (devicechanged['Telecommande Blanc'] == 'On') then
     print('----- Telecommande Blanc -----')
     commandArray['Variable:Script_Lamp_iswhite'] = 'true'
+    cmd = 'curl --user '..domoticzCredentials..' "http://'..server..'/json.htm?type=command&param=setcolbrightnessvalue&idx='..idx..'&hue='..hue..'&brightness='..brightness..'&iswhite=true" &'
+    os.execute(cmd)
     -- On arrête tous les changements éventuels (Demo On) alors décorélés et prévus dans la minute en cours (puis reprise la minute suivante)
     cmd = "for i in `ps axww | grep '^.*sleep.*curl.*setcolbrightnessvalue.*$' | awk '{ print $1 }'`; do kill -9 $i; done"
-    os.execute(cmd)
-    cmd = 'curl --user '..domoticzCredentials..' "http://'..server..'/json.htm?type=command&param=setcolbrightnessvalue&idx='..idx..'&hue='..hue..'&brightness='..brightness..'&iswhite=true" &'
     os.execute(cmd)
 
 elseif (devicechanged['Telecommande Rouge'] == 'On') then
@@ -59,10 +59,10 @@ elseif (devicechanged['Telecommande Rouge'] == 'On') then
     commandArray['Variable:Script_Lamp_iswhite'] = 'false'
     hue_rouge = '0'
     commandArray['Variable:Script_Lamp_color_hue'] = hue_rouge
+    cmd = 'curl --user '..domoticzCredentials..' "http://'..server..'/json.htm?type=command&param=setcolbrightnessvalue&idx='..idx..'&hue='..hue_rouge..'&brightness='..brightness..'&iswhite=false" &'
+    os.execute(cmd)
     -- On arrête tous les changements éventuels (Demo On) alors décorélés et prévus dans la minute en cours (puis reprise la minute suivante)
     cmd = "for i in `ps axww | grep '^.*sleep.*curl.*setcolbrightnessvalue.*$' | awk '{ print $1 }'`; do kill -9 $i; done"
-    os.execute(cmd)
-    cmd = 'curl --user '..domoticzCredentials..' "http://'..server..'/json.htm?type=command&param=setcolbrightnessvalue&idx='..idx..'&hue='..hue_rouge..'&brightness='..brightness..'&iswhite=false" &'
     os.execute(cmd)
 
 elseif (devicechanged['Telecommande Vert'] == 'On') then
@@ -70,10 +70,10 @@ elseif (devicechanged['Telecommande Vert'] == 'On') then
     commandArray['Variable:Script_Lamp_iswhite'] = 'false'
     hue_vert = '120'
     commandArray['Variable:Script_Lamp_color_hue'] = hue_vert
+    cmd = 'curl --user '..domoticzCredentials..' "http://'..server..'/json.htm?type=command&param=setcolbrightnessvalue&idx='..idx..'&hue='..hue_vert..'&brightness='..brightness..'&iswhite=false" &'
+    os.execute(cmd)
     -- On arrête tous les changements éventuels (Demo On) alors décorélés et prévus dans la minute en cours (puis reprise la minute suivante)
     cmd = "for i in `ps axww | grep '^.*sleep.*curl.*setcolbrightnessvalue.*$' | awk '{ print $1 }'`; do kill -9 $i; done"
-    os.execute(cmd)
-    cmd = 'curl --user '..domoticzCredentials..' "http://'..server..'/json.htm?type=command&param=setcolbrightnessvalue&idx='..idx..'&hue='..hue_vert..'&brightness='..brightness..'&iswhite=false" &'
     os.execute(cmd)
 
 elseif (devicechanged['Telecommande Bleu'] == 'On') then
@@ -81,10 +81,10 @@ elseif (devicechanged['Telecommande Bleu'] == 'On') then
     commandArray['Variable:Script_Lamp_iswhite'] = 'false'
     hue_bleu = '240'
     commandArray['Variable:Script_Lamp_color_hue'] = hue_bleu
+    cmd = 'curl --user '..domoticzCredentials..' "http://'..server..'/json.htm?type=command&param=setcolbrightnessvalue&idx='..idx..'&hue='..hue_bleu..'&brightness='..brightness..'&iswhite=false" &'
+    os.execute(cmd)
     -- On arrête tous les changements éventuels (Demo On) alors décorélés et prévus dans la minute en cours (puis reprise la minute suivante)
     cmd = "for i in `ps axww | grep '^.*sleep.*curl.*setcolbrightnessvalue.*$' | awk '{ print $1 }'`; do kill -9 $i; done"
-    os.execute(cmd)
-    cmd = 'curl --user '..domoticzCredentials..' "http://'..server..'/json.htm?type=command&param=setcolbrightnessvalue&idx='..idx..'&hue='..hue_bleu..'&brightness='..brightness..'&iswhite=false" &'
     os.execute(cmd)
 
 elseif (devicechanged['Telecommande Jaune'] == 'On') then
@@ -92,10 +92,10 @@ elseif (devicechanged['Telecommande Jaune'] == 'On') then
     commandArray['Variable:Script_Lamp_iswhite'] = 'false'
     hue_jaune = '60'
     commandArray['Variable:Script_Lamp_color_hue'] = hue_jaune
+    cmd = 'curl --user '..domoticzCredentials..' "http://'..server..'/json.htm?type=command&param=setcolbrightnessvalue&idx='..idx..'&hue='..hue_jaune..'&brightness='..brightness..'&iswhite=false" &'
+    os.execute(cmd)
     -- On arrête tous les changements éventuels (Demo On) alors décorélés et prévus dans la minute en cours (puis reprise la minute suivante)
     cmd = "for i in `ps axww | grep '^.*sleep.*curl.*setcolbrightnessvalue.*$' | awk '{ print $1 }'`; do kill -9 $i; done"
-    os.execute(cmd)
-    cmd = 'curl --user '..domoticzCredentials..' "http://'..server..'/json.htm?type=command&param=setcolbrightnessvalue&idx='..idx..'&hue='..hue_jaune..'&brightness='..brightness..'&iswhite=false" &'
     os.execute(cmd)
 
 elseif (devicechanged['Telecommande Cyan'] == 'On') then
@@ -103,10 +103,10 @@ elseif (devicechanged['Telecommande Cyan'] == 'On') then
     commandArray['Variable:Script_Lamp_iswhite'] = 'false'
     hue_cyan = '180'
     commandArray['Variable:Script_Lamp_color_hue'] = hue_cyan
+    cmd = 'curl --user '..domoticzCredentials..' "http://'..server..'/json.htm?type=command&param=setcolbrightnessvalue&idx='..idx..'&hue='..hue_cyan..'&brightness='..brightness..'&iswhite=false" &'
+    os.execute(cmd)
     -- On arrête tous les changements éventuels (Demo On) alors décorélés et prévus dans la minute en cours (puis reprise la minute suivante)
     cmd = "for i in `ps axww | grep '^.*sleep.*curl.*setcolbrightnessvalue.*$' | awk '{ print $1 }'`; do kill -9 $i; done"
-    os.execute(cmd)
-    cmd = 'curl --user '..domoticzCredentials..' "http://'..server..'/json.htm?type=command&param=setcolbrightnessvalue&idx='..idx..'&hue='..hue_cyan..'&brightness='..brightness..'&iswhite=false" &'
     os.execute(cmd)
 
 elseif (devicechanged['Telecommande Violet'] == 'On') then
@@ -114,10 +114,10 @@ elseif (devicechanged['Telecommande Violet'] == 'On') then
     commandArray['Variable:Script_Lamp_iswhite'] = 'false'
     hue_violet = '300'
     commandArray['Variable:Script_Lamp_color_hue'] = hue_violet
+    cmd = 'curl --user '..domoticzCredentials..' "http://'..server..'/json.htm?type=command&param=setcolbrightnessvalue&idx='..idx..'&hue='..hue_violet..'&brightness='..brightness..'&iswhite=false" &'
+    os.execute(cmd)
     -- On arrête tous les changements éventuels (Demo On) alors décorélés et prévus dans la minute en cours (puis reprise la minute suivante)
     cmd = "for i in `ps axww | grep '^.*sleep.*curl.*setcolbrightnessvalue.*$' | awk '{ print $1 }'`; do kill -9 $i; done"
-    os.execute(cmd)
-    cmd = 'curl --user '..domoticzCredentials..' "http://'..server..'/json.htm?type=command&param=setcolbrightnessvalue&idx='..idx..'&hue='..hue_violet..'&brightness='..brightness..'&iswhite=false" &'
     os.execute(cmd)
 
 -- Virtual device (pour l'interface tablette)
@@ -126,10 +126,10 @@ elseif (devicechanged['Telecommande Rose'] == 'On') then
     commandArray['Variable:Script_Lamp_iswhite'] = 'false'
     hue_rose = '330'
     commandArray['Variable:Script_Lamp_color_hue'] = hue_rose
+    cmd = 'curl --user '..domoticzCredentials..' "http://'..server..'/json.htm?type=command&param=setcolbrightnessvalue&idx='..idx..'&hue='..hue_rose..'&brightness='..brightness..'&iswhite=false" &'
+    os.execute(cmd)
     -- On arrête tous les changements éventuels (Demo On) alors décorélés et prévus dans la minute en cours (puis reprise la minute suivante)
     cmd = "for i in `ps axww | grep '^.*sleep.*curl.*setcolbrightnessvalue.*$' | awk '{ print $1 }'`; do kill -9 $i; done"
-    os.execute(cmd)
-    cmd = 'curl --user '..domoticzCredentials..' "http://'..server..'/json.htm?type=command&param=setcolbrightnessvalue&idx='..idx..'&hue='..hue_rose..'&brightness='..brightness..'&iswhite=false" &'
     os.execute(cmd)
 
 elseif (devicechanged['Telecommande Color-'] == 'On') then
@@ -137,10 +137,10 @@ elseif (devicechanged['Telecommande Color-'] == 'On') then
     commandArray['Variable:Script_Lamp_iswhite'] = 'false'
     hue_new = tostring((hue - 10) % 360)
     commandArray['Variable:Script_Lamp_color_hue'] = hue_new
+    cmd = 'curl --user '..domoticzCredentials..' "http://'..server..'/json.htm?type=command&param=setcolbrightnessvalue&idx='..idx..'&hue='..hue_new..'&brightness='..brightness..'&iswhite=false" &'
+    os.execute(cmd)
     -- On arrête tous les changements éventuels (Demo On) alors décorélés et prévus dans la minute en cours (puis reprise la minute suivante)
     cmd = "for i in `ps axww | grep '^.*sleep.*curl.*setcolbrightnessvalue.*$' | awk '{ print $1 }'`; do kill -9 $i; done"
-    os.execute(cmd)
-    cmd = 'curl --user '..domoticzCredentials..' "http://'..server..'/json.htm?type=command&param=setcolbrightnessvalue&idx='..idx..'&hue='..hue_new..'&brightness='..brightness..'&iswhite=false" &'
     os.execute(cmd)
 
 elseif (devicechanged['Telecommande Color+'] == 'On') then
@@ -148,10 +148,10 @@ elseif (devicechanged['Telecommande Color+'] == 'On') then
     commandArray['Variable:Script_Lamp_iswhite'] = 'false'
     hue_new = tostring((hue + 10) % 360)
     commandArray['Variable:Script_Lamp_color_hue'] = hue_new
+    cmd = 'curl --user '..domoticzCredentials..' "http://'..server..'/json.htm?type=command&param=setcolbrightnessvalue&idx='..idx..'&hue='..hue_new..'&brightness='..brightness..'&iswhite=false" &'
+    os.execute(cmd)
     -- On arrête tous les changements éventuels (Demo On) alors décorélés et prévus dans la minute en cours (puis reprise la minute suivante)
     cmd = "for i in `ps axww | grep '^.*sleep.*curl.*setcolbrightnessvalue.*$' | awk '{ print $1 }'`; do kill -9 $i; done"
-    os.execute(cmd)
-    cmd = 'curl --user '..domoticzCredentials..' "http://'..server..'/json.htm?type=command&param=setcolbrightnessvalue&idx='..idx..'&hue='..hue_new..'&brightness='..brightness..'&iswhite=false" &'
     os.execute(cmd)
 
 elseif (devicechanged['Telecommande Bright-'] == 'On') then
@@ -162,10 +162,10 @@ elseif (devicechanged['Telecommande Bright-'] == 'On') then
         brightness_new = tostring(math.max(1, brightness - 15))
     end
     commandArray['Variable:Script_Lamp_brightness'] = brightness_new
+    cmd = 'curl --user '..domoticzCredentials..' "http://'..server..'/json.htm?type=command&param=setcolbrightnessvalue&idx='..idx..'&hue='..hue..'&brightness='..brightness_new..'&iswhite='..iswhite..'" &'
+    os.execute(cmd)
     -- On arrête tous les changements éventuels (Demo On) alors décorélés et prévus dans la minute en cours (puis reprise la minute suivante)
     cmd = "for i in `ps axww | grep '^.*sleep.*curl.*setcolbrightnessvalue.*$' | awk '{ print $1 }'`; do kill -9 $i; done"
-    os.execute(cmd)
-    cmd = 'curl --user '..domoticzCredentials..' "http://'..server..'/json.htm?type=command&param=setcolbrightnessvalue&idx='..idx..'&hue='..hue..'&brightness='..brightness_new..'&iswhite='..iswhite..'" &'
     os.execute(cmd)
 
 elseif (devicechanged['Telecommande Bright+'] == 'On') then
@@ -176,10 +176,10 @@ elseif (devicechanged['Telecommande Bright+'] == 'On') then
         brightness_new = tostring(math.min(100, brightness + 15))
     end
     commandArray['Variable:Script_Lamp_brightness'] = brightness_new
+    cmd = 'curl --user '..domoticzCredentials..' "http://'..server..'/json.htm?type=command&param=setcolbrightnessvalue&idx='..idx..'&hue='..hue..'&brightness='..brightness_new..'&iswhite='..iswhite..'" &'
+    os.execute(cmd)
     -- On arrête tous les changements éventuels (Demo On) alors décorélés et prévus dans la minute en cours (puis reprise la minute suivante)
     cmd = "for i in `ps axww | grep '^.*sleep.*curl.*setcolbrightnessvalue.*$' | awk '{ print $1 }'`; do kill -9 $i; done"
-    os.execute(cmd)
-    cmd = 'curl --user '..domoticzCredentials..' "http://'..server..'/json.htm?type=command&param=setcolbrightnessvalue&idx='..idx..'&hue='..hue..'&brightness='..brightness_new..'&iswhite='..iswhite..'" &'
     os.execute(cmd)
 
 elseif (devicechanged['Telecommande Speed-'] == 'On') then
