@@ -127,9 +127,9 @@ elseif (devicechanged['Telecommande Color+'] == 'On') then
 elseif (devicechanged['Telecommande Bright-'] == 'On') then
     print('----- Telecommande Bright-  -----')
     if (brightness < 25) then
-        brightness_new = tostring(brightness - 5)
+        brightness_new = tostring(math.max(1, brightness - 5))
     else
-        brightness_new = tostring(math.max(1, (brightness - 15)))
+        brightness_new = tostring(math.max(1, brightness - 15))
     end
     commandArray['Variable:Script_Lamp_brightness'] = brightness_new
     cmd = 'curl --user '..domoticzCredentials..' "http://'..server..'/json.htm?type=command&param=setcolbrightnessvalue&idx='..idx..'&hue='..hue..'&brightness='..brightness_new..'&iswhite='..iswhite..'" &'
