@@ -24,17 +24,16 @@ delay_minutes = 15 -- ATTENTION : A mettre à jour également dans dashboard.js
 --    3 => ne se base que sur le ping pour détecter une présence. 3 états : a. présent, b. présent mais on essaye de pinger, c. non présent
 --    2 => Passe immédiatement d'un état de présence à un état de non présence. Utile avec le script de détection continue d'adresse MAC par exemple (python)
 modePresence = '2'
-
 -----------------
 
 
 commandArray = {}
 
-
-
 datetime = os.date("*t") -- table is returned containing date & time information
 time_inminutes = 60 * datetime.hour + datetime.min
 Script_Presence_Maison = uservariables['Script_Presence_Maison']
+Script_Presence_Maison_HasChanged = 0
+
 
 -- tous les jours entre 10h du matin et minuit (- 1min pour que les autres scripts se déclenchent correctement à 10h pile)
 if (time_inminutes >= 10 * 60 - 1) then  
@@ -46,13 +45,13 @@ if (time_inminutes >= 10 * 60 - 1) then
         -- Présence = -1 après 'delai_minutes' depuis le dernier ping, on recommence à tenter des pings
         if (Script_Presence_Maison == 1 and timedifference(uservariables_lastupdate['Script_Presence_Maison']) >= delay_minutes * 60) then
             Script_Presence_Maison = -1
-            commandArray['Variable:Script_Presence_Maison'] = "-1"
+            Script_Presence_Maison_HasChanged = 1
         
         -- Presence = 0 si pas de ping à partir de 2 fois 'delay minutes' (1 x 'delay minutes' en presence '=1' + 1 x 'delay minutes' en presence '=-1' )
         elseif (Script_Presence_Maison == -1 and timedifference(uservariables_lastupdate['Script_Presence_Maison']) >= delay_minutes * 60) then
             Script_Presence_Maison = 0
-            commandArray['Variable:Script_Presence_Maison'] = "0"
-            print('----- Plus de présence détectée : Ping telephone/ordinateur KO -----')
+            Script_Presence_Maison_HasChanged = 1
+            print('----- Plus de présence détectée : Ping telephone/ordinateur KO depuis ' .. tostring(delay_minutes) .. ' min -----')
         end
 
     -- Mode 2 états : on passe immédiatement de "présence" à "non présence" (à utiliser avec le script python de détection continue d'adresse MAC)
@@ -61,15 +60,15 @@ if (time_inminutes >= 10 * 60 - 1) then
         -- Présence = 0 après 'delai_minutes' depuis le dernier évènement de présence
         if (Script_Presence_Maison == 1 and timedifference(uservariables_lastupdate['Script_Presence_Maison']) >= delay_minutes * 60) then
             Script_Presence_Maison = 0
-            commandArray['Variable:Script_Presence_Maison'] = "0"
-            print('----- Plus de présence détectée par adresse MAC (script python presence.py) -----')
+            Script_Presence_Maison_HasChanged = 1
+            print('----- Plus de présence détectée par adresse MAC depuis ' .. tostring(delay_minutes) .. ' min (script python presence.py) -----')
         end
 
     
     else -- Si pb dans le choix du mode, on passe en mode "non présent" en permanence
         if (Script_Presence_Maison ~= 0) then
             Script_Presence_Maison = 0
-            commandArray['Variable:Script_Presence_Maison'] = "0"
+            Script_Presence_Maison_HasChanged = 1
         end
     end
 
@@ -109,7 +108,7 @@ if (time_inminutes >= 10 * 60 - 1) then
                 print('----- Présence continue détectée : Ping Ordinateur ' .. ping_success_computer .. ' OK -----')
             end
             Script_Presence_Maison = 1
-            commandArray['Variable:Script_Presence_Maison'] = "1"
+            Script_Presence_Maison_HasChanged = 1
         
         elseif (ping_success_tel ~= "") then
             if (uservariables['Script_Presence_Maison'] == 0) then -- On test par rapport à l'état de présence au début du script
@@ -118,7 +117,7 @@ if (time_inminutes >= 10 * 60 - 1) then
                 print('----- Présence continue détectée : Ping Téléphone ' .. ping_success_tel .. ' OK -----')
             end
             Script_Presence_Maison = 1
-            commandArray['Variable:Script_Presence_Maison'] = "1"
+            Script_Presence_Maison_HasChanged = 1
         end
 
     end
@@ -129,9 +128,21 @@ if (time_inminutes >= 10 * 60 - 1) then
 else
     if (Script_Presence_Maison ~= 0) then
         Script_Presence_Maison = 0
-        commandArray['Variable:Script_Presence_Maison'] = "0"
+        Script_Presence_Maison_HasChanged = 1
     end
 end
 
+
+-- Si l'état de présence a changé, on l'enregistre dans la variable Domoticz
+if(Script_Presence_Maison_HasChanged == 1) then
+
+    commandArray['Variable:Script_Presence_Maison'] = tostring(Script_Presence_Maison)
+
+    -- Si l'état passe de présent à non présent (avant 22h)
+    if(Script_Presence_Maison == 0 and uservariables['Script_Presence_Maison'] ~= 0 and datetime.hour < 22) then
+        tts_function('Mode absent dans une minute')
+    end
+
+end
 
 return commandArray
