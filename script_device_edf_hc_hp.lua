@@ -4,16 +4,13 @@
 ------------------------------------------------------------ 
 
 --------  Paramètres  ---------
--- Nom du device Domoticz du compteur EDF (réel)
-owl_name = "Compteur EDF"
-
--- ID du compteur (virtuel) Smart Meter HC/HP 
-compteur_virtuel_id = 97
+owl_name = "Compteur EDF"  -- Nom du device Domoticz du compteur EDF (réel)
+compteur_virtuel_id = 97   -- ID du compteur (virtuel) Smart Meter HC/HP 
 -------------------------------
 
 commandArray = {}
 
-if (devicechanged['Compteur EDF']) then
+if (devicechanged[owl_name]) then
 
     datetime = os.date("*t") -- table is returned containing date & time information
 
