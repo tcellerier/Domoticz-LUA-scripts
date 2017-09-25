@@ -2,19 +2,20 @@
 -- Script de gestion de la telecommande RF
 ------------------------------------------------------------ 
 
--- A parametrer dans chaque device : Off Delay: 1 second !!!!
+-- A parametrer dans chaque device Domoticz : Off Delay: 1 second !!!!
 
 
 package.path = package.path .. ';' .. '/home/pi/domoticz/scripts/lua/?.lua' 
 require("library_credentials")
+require("library")
 
 
 idx = 66        -- identifiant domoticz de la lampe
 server = '127.0.0.1' 
-brightness = tonumber(uservariables['Script_Lamp_brightness'])   -- intensité de 1 à 100
-hue = tonumber(uservariables['Script_Lamp_color_hue'])    -- couleur (de 0 à 359)
-iswhite = uservariables['Script_Lamp_iswhite']    -- couleur blanche ou pas (true / false)
-frequence = tonumber(uservariables['Script_Lamp_Freq_Change'])  -- Fréquence de change des couleurs / min
+brightness = tonumber(uservariables['Script_Lamp_brightness']) or 70  -- intensité de 1 à 100
+hue = tonumber(uservariables['Script_Lamp_color_hue']) or 100    -- couleur (de 0 à 359)
+iswhite = uservariables['Script_Lamp_iswhite'] or false    -- couleur blanche ou pas (true / false)
+frequence = tonumber(uservariables['Script_Lamp_Freq_Change']) or 1  -- Fréquence de change des couleurs / min
 -- domoticzCredentials dans la library library_credentials
 
 
@@ -38,8 +39,10 @@ elseif (devicechanged['Telecommande Demo'] == 'On') then
     if (otherdevices['Lampe chambre Color Change'] == 'Off') then
         commandArray['Variable:Script_Lamp_iswhite'] = 'false'
         commandArray['Lampe chambre Color Change'] = 'On'
+        tts_function('Demo On')
     else
         commandArray['Lampe chambre Color Change'] = 'Off'
+        tts_function('Demo Off')
         -- Stoppe tous les changements de couleur prévus dans la minute
         cmd = "for i in `ps axww | grep '^.*sleep.*curl.*setcolbrightnessvalue.*$' | awk '{ print $1 }'`; do kill -9 $i; done"
         os.execute(cmd)
@@ -50,6 +53,12 @@ elseif (devicechanged['Telecommande Blanc'] == 'On') then
     commandArray['Variable:Script_Lamp_iswhite'] = 'true'
     cmd = 'curl --user '..domoticzCredentials..' "http://'..server..'/json.htm?type=command&param=setcolbrightnessvalue&idx='..idx..'&hue='..hue..'&brightness='..brightness..'&iswhite=true" &'
     os.execute(cmd)
+
+    -- On arrête le mode Démo
+    if (otherdevices['Lampe chambre Color Change'] == 'On') then
+        commandArray['Lampe chambre Color Change'] = 'Off'
+        tts_function('Demo Off')
+    end
     -- On arrête tous les changements éventuels (Demo On) alors décorélés et prévus dans la minute en cours (puis reprise la minute suivante)
     cmd = "for i in `ps axww | grep '^.*sleep.*curl.*setcolbrightnessvalue.*$' | awk '{ print $1 }'`; do kill -9 $i; done"
     os.execute(cmd)
@@ -162,6 +171,7 @@ elseif (devicechanged['Telecommande Bright-'] == 'On') then
         brightness_new = tostring(math.max(1, brightness - 15))
     end
     commandArray['Variable:Script_Lamp_brightness'] = brightness_new
+    tts_function(brightness_new)
     cmd = 'curl --user '..domoticzCredentials..' "http://'..server..'/json.htm?type=command&param=setcolbrightnessvalue&idx='..idx..'&hue='..hue..'&brightness='..brightness_new..'&iswhite='..iswhite..'" &'
     os.execute(cmd)
     -- On arrête tous les changements éventuels (Demo On) alors décorélés et prévus dans la minute en cours (puis reprise la minute suivante)
@@ -176,6 +186,7 @@ elseif (devicechanged['Telecommande Bright+'] == 'On') then
         brightness_new = tostring(math.min(100, brightness + 15))
     end
     commandArray['Variable:Script_Lamp_brightness'] = brightness_new
+    tts_function(brightness_new)
     cmd = 'curl --user '..domoticzCredentials..' "http://'..server..'/json.htm?type=command&param=setcolbrightnessvalue&idx='..idx..'&hue='..hue..'&brightness='..brightness_new..'&iswhite='..iswhite..'" &'
     os.execute(cmd)
     -- On arrête tous les changements éventuels (Demo On) alors décorélés et prévus dans la minute en cours (puis reprise la minute suivante)
@@ -185,11 +196,13 @@ elseif (devicechanged['Telecommande Bright+'] == 'On') then
 elseif (devicechanged['Telecommande Speed-'] == 'On') then
     print('----- Telecommande Speed- -----')
     frequence_new = tostring(math.max(1, (frequence - 1)))
+    tts_function(frequence_new)
     commandArray['Variable:Script_Lamp_Freq_Change'] = frequence_new
 
 elseif (devicechanged['Telecommande Speed+'] == 'On') then
     print('----- Telecommande Speed+ -----')
     frequence_new = tostring(math.min(6, (frequence + 1)))
+    tts_function(frequence_new)
     commandArray['Variable:Script_Lamp_Freq_Change'] = frequence_new
 
 elseif (devicechanged['Telecommande Mode-'] == 'On') then
