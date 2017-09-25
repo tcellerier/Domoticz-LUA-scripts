@@ -6,10 +6,8 @@
 
 commandArray = {}
 
-chauffage_salon_auto = otherdevices['Chauffage Salon Auto']
-
 -- Si le mode Auto est activé
-if(chauffage_salon_auto == 'On' and uservariables['Script_Mode_Maison'] == 'auto') then
+if(otherdevices['Chauffage Salon Auto'] == 'On' and uservariables['Script_Mode_Maison'] == 'auto') then
 
     -- S'il y a une présence
     if(uservariables['Script_Presence_Maison'] >= 1 or uservariables['Script_Presence_Maison'] == -1) then
