@@ -29,15 +29,15 @@ commandArray = {}
 
 
 
--- On détermine si on est un jour ferie
+-- On détermine si on est un jour feriée
 is_jour_ferie = 0
 date_jour = os.date("%x")
 for jourferie_i in string.gmatch(uservariables['Var_Jours_Feries'], "%S+") do  -- %S+ matche tout ce qui n'est pas un espace
     _, _, jour_ferie_j, jour_ferie_m, jour_ferie_a = string.find(jourferie_i, "(%d+)/(%d+)/(%d+)")
     date_jour_ferie = os.date("%x", os.time{day=jour_ferie_j, month=jour_ferie_m, year='20'..jour_ferie_a})
-    if (date_jour_ferie == date_jour) then  -- Si on est dans la journée féri
+    if (date_jour_ferie == date_jour) then  -- Si on est dans la journée fériée
         is_jour_ferie = 1
-        break -- on sort de la bouche si on sait qu'on est un jour féri?
+        break -- on sort de la bouche si on sait qu'on est un jour fériée
     end
 end
 
@@ -53,8 +53,8 @@ alarmclock_inminutes = 60 * tonumber(alarm1) + tonumber(alarm2)
 chambre_consigne_valeur = uservariables['Var_Chauffage_chambre_Consigne'] 
 chambre_consigne_onoff = otherdevices['Chauffage Chambre Consigne']
 sdb_consigne_onoff = otherdevices['Chauffage Sdb Consigne']
-chambre_temp = otherdevices_temperature['Temp chambre']
-dehors_temp = otherdevices_temperature['Temp dehors']
+chambre_temp = otherdevices_temperature['Temp chambre'] or 18
+dehors_temp = otherdevices_temperature['Temp dehors'] or 10
 
 
 
@@ -64,7 +64,7 @@ dehors_temp = otherdevices_temperature['Temp dehors']
 --    si le mode auto est activé 
 --    et si le mode chauffage est activé
 --    et si la temperature dehors est supérieure au minmium
-if (uservariables['Script_Mode_Maison'] == 'auto' and otherdevices['Chauffage Chambre-Sdb Auto'] == 'On' and not (dehors_temp > dehors_min ) ) then
+if (uservariables['Script_Mode_Maison'] == 'auto' and otherdevices['Chauffage Chambre-Sdb Auto'] == 'On' and dehors_temp <= dehors_min ) then
 
     --------------------
     -- Tous les jours --
