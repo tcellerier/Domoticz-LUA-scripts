@@ -25,8 +25,8 @@ datetime = os.date("*t") -- table is returned containing date & time information
 time_inminutes = 60 * datetime.hour + datetime.min
 
 salon_onoff = otherdevices['Radiateur Salon On/Off']
-dehors_temp = otherdevices_temperature['Temp dehors']
-salon_temp = otherdevices_temperature['Temp salon']
+dehors_temp = otherdevices_temperature['Temp dehors'] or 10
+salon_temp = otherdevices_temperature['Temp salon'] or 18
 
 SomErreur_nb_val = 10 -- nb valeurs stockées pour SomErreur (* Ki)
 
@@ -36,7 +36,7 @@ SomErreur_nb_val = 10 -- nb valeurs stockées pour SomErreur (* Ki)
 --    si le mode auto est activé 
 --    et si le mode Chauffage consigne Salon est activé
 --    et si la temperature dehors est supérieure au minmium
-if (uservariables['Script_Mode_Maison'] == 'auto' and otherdevices['Chauffage Salon Consigne'] == 'On' and not (dehors_temp > dehors_min ) ) then
+if (uservariables['Script_Mode_Maison'] == 'auto' and otherdevices['Chauffage Salon Consigne'] == 'On' and dehors_temp <= dehors_min ) then
 
 
     -- Cycle d'exécution de 3 min
