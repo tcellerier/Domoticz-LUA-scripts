@@ -11,7 +11,7 @@
 * script_time_chauffage_salon_auto.lua
 * script_time_chauffage_salon_pid.lua
 * script_time_chauffage_sdb_consigne.lua
-* script_time_chauffage_sdbcha_auto.lua
+* script_time_chauffage_sdbcha_planif.lua
 
 ### Blinds
 * script_device_volets.lua
