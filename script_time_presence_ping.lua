@@ -1,9 +1,13 @@
 ----------------------------------------------------------------------
 -- Script de vérification de présence
--- via ping du téléphone et de l'ordinateur
+-- via a/ ping du téléphone et de l'ordinateur et b/ Script python de détection des adresses MAC des téléphones
 
--- Après un ping OK, indique une présence pendant 2 fois 'delay_minutes'
--- A partir de 'delay_minutes', re-execute les pings toutes les minutes jusqu'à OK
+-- Mode 3 :
+--   Après un ping OK, indique une présence pendant 2 fois 'delay_minutes'
+--   A partir de 'delay_minutes', ré-execute les pings toutes les minutes jusqu'à OK
+
+-- Mode 2:
+--   Le script python détecte en permanence les paquets des adresses MAC configurés => passe la présence à 1 au plus une fois par minute
 
 -- Présence = 1  => Présence détectée depuis moins de 'delay_minutes' 
 -- Présence = -1 => Présence détectée entre 'delay_minutes' et 2 x 'delay_minutes' (en mode 3 uniquement)
@@ -22,7 +26,7 @@ delay_minutes = 15 -- ATTENTION : A mettre à jour également dans dashboard.js
 
 -- Deux modes possibles :
 --    3 => ne se base que sur le ping pour détecter une présence. 3 états : a. présent, b. présent mais on essaye de pinger, c. non présent
---    2 => Passe immédiatement d'un état de présence à un état de non présence. Utile avec le script de détection continue d'adresse MAC par exemple (python)
+--    2 => Passe immédiatement d'un état de présence à un état de non présence. Doit être utilisé avec le script de détection continue d'adresse MAC (python)
 modePresence = '2'
 -----------------
 
@@ -35,8 +39,8 @@ Script_Presence_Maison = uservariables['Script_Presence_Maison']
 Script_Presence_Maison_HasChanged = 0
 
 
--- tous les jours entre 10h du matin et minuit (- 1min pour que les autres scripts se déclenchent correctement à 10h pile)
-if (time_inminutes >= 10 * 60 - 1) then  
+-- tous les jours entre 8h du matin et minuit (- 1min pour que les autres scripts se déclenchent correctement à 8h pile)
+if (time_inminutes >= 8 * 60 - 1) then  
 
 
     -- Mode 3 états : on tente de pinger (présence = -1) avant de passer en "non présence"
@@ -73,7 +77,7 @@ if (time_inminutes >= 10 * 60 - 1) then
     end
 
 
-    -- si presence <= 0, on ping à nouveau
+    -- si presence <= 0, on ping à nouveau mais
     if (Script_Presence_Maison <= 0) then  
         
         ping_success_computer = ""
@@ -124,7 +128,7 @@ if (time_inminutes >= 10 * 60 - 1) then
 
 
 
--- Entre minuit et 10h -> on désactive la présence
+-- Entre minuit et 8h -> on désactive la présence (forcée à 0)
 else
     if (Script_Presence_Maison ~= 0) then
         Script_Presence_Maison = 0
@@ -138,8 +142,8 @@ if(Script_Presence_Maison_HasChanged == 1) then
 
     commandArray['Variable:Script_Presence_Maison'] = tostring(Script_Presence_Maison)
 
-    -- Si l'état passe de présent à non présent (avant 22h)
-    if(Script_Presence_Maison == 0 and uservariables['Script_Presence_Maison'] ~= 0 and datetime.hour < 22) then
+    -- Si l'état passe de présent à non présent (entre 8h et 22h)
+    if(Script_Presence_Maison == 0 and uservariables['Script_Presence_Maison'] ~= 0 and datetime.hour < 22 and datetime.hour >= 8) then
         tts_function('Mode absent dans une minute')
     end
 
