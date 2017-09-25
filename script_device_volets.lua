@@ -22,12 +22,12 @@ commandArray = {}
 -- Ouverture des 2 volets salon
 if (devicechanged['Volets Salon'] == 'Open') then
     commandArray['Volets Salon Gauche'] = 'On'
-    commandArray['Volets Salon Droit'] = 'On'
+    commandArray['Volets Salon Droit'] = 'On AFTER 5'
 
 -- Fermeture des 2 volets salon
 elseif (devicechanged['Volets Salon'] == 'Closed') then
     commandArray['Volets Salon Gauche'] = 'Off'
-    commandArray['Volets Salon Droit'] = 'Off'
+    commandArray['Volets Salon Droit'] = 'Off AFTER 5'
 end
 
 
@@ -50,20 +50,20 @@ end
 -- Ouverture volet Salon Droit 
 if (devicechanged['Volets Salon Droit'] == 'Open') then 
     if (uservariables['Script_Volets_salon_droit'] == 'closed' or timedifference(uservariables_lastupdate['Script_Volets_salon_droit']) < force_diff_sec) then
-        commandArray['GPIO 23 violet'] = 'Off AFTER 4'
+        commandArray['GPIO 23 violet'] = 'Off'
     end
         commandArray['Variable:Script_Volets_salon_droit'] = 'open'
 
 -- Fermeture volet Salon Droit 
 elseif (devicechanged['Volets Salon Droit'] == 'Closed') then 
     if(uservariables['Script_Volets_salon_droit'] == 'open' or timedifference(uservariables_lastupdate['Script_Volets_salon_droit']) < force_diff_sec) then
-        commandArray['GPIO 22 bleu'] = 'Off AFTER 4'
+        commandArray['GPIO 22 bleu'] = 'Off'
     end        
     commandArray['Variable:Script_Volets_salon_droit'] = 'closed'
 end
 
 
--- Ouverture volet Chambre 
+-- Ouverture volet Chambre  (On active le mode présence en parallèle)
 if (devicechanged['Volets Chambre'] == 'Open') then 
     if(uservariables['Script_Volets_chambre'] == 'closed' or timedifference(uservariables_lastupdate['Script_Volets_chambre']) < force_diff_sec) then
         commandArray['GPIO 24 blanc'] = 'Off'
@@ -85,6 +85,8 @@ if (devicechanged['Volets sdb'] == 'Open') then
         commandArray['GPIO 17 orange'] = 'Off'
     end
     commandArray['Variable:Script_Volets_sdb'] = 'open'
+    commandArray['Variable:Script_Presence_Maison'] = '1'
+    print('----- Présence confirmée manuellement via l\'ouverture du volet salle de bain')
 
 -- Fermeture volet sdb 
 elseif (devicechanged['Volets sdb'] == 'Closed') then 
