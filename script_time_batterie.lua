@@ -1,11 +1,12 @@
 -------------------------------------------------------------
 -- Script de vérification de mise à jour des devices 
--- Envoie alerte une fois par jour si pas de mise à jour d'un device depuis + de 24h 
+-- Envoie alerte 2 fois par semaine si pas de mise à jour d'un device depuis + de 24h 
 ------------------------------------------------------------ 
 
 package.path = package.path .. ';' .. '/home/pi/domoticz/scripts/lua/?.lua' 
 require("library")
-
+require("library_credentials")
+JSON = assert(loadfile "/home/pi/domoticz/scripts/lua/JSON.lua")() -- one-time load of the routines
 
 ------------------
 --- Paramètres ---
@@ -18,6 +19,11 @@ device_list["Sonde Oregon Salle de Bain"] = "Temp sdb"
 device_list["Sonde Oregon Salon"] = "Temp salon"
 device_list["Compteur electrique OWL CM180"] = "Compteur EDF"
 
+camera_device_name = "Camera"
+server = '127.0.0.1' 
+BatteryThreshold = 30   -- Seuil batterie faible en %
+------------------
+
 
 commandArray = {}
 
@@ -27,10 +33,12 @@ time_inminutes = 60 * datetime.hour + datetime.min
 
 
 -- Vérification le weekend à 14h
-if (time_inminutes == 14*60 and (datetime.wday == 7 or datetime.wday == 1)) then
+if (time_inminutes == 14*60 and (datetime.wday == 7 or datetime.wday == 1)) then 
 
-    i = 1 -- Compteur 
-    -- Pour chaque device testé
+
+
+    -- Pour chaque device de device_list
+    i = 1
     for key,value in pairs(device_list) do 
 
         lastupdate_heures = math.floor(timedifference(otherdevices_lastupdate[value]) / 3600)
@@ -44,10 +52,23 @@ if (time_inminutes == 14*60 and (datetime.wday == 7 or datetime.wday == 1)) then
             -- Notifications subject#body#priority  
             commandArray[i] = {['SendNotification'] = 'Batterie faible#'..key..' - Pas de données depuis '..otherdevices_lastupdate[value]..'#-1' }
             i = i + 1
-            
         end
-
     end
+
+
+    -- Vérification de la batterie de la caméra (directement depuis le flux json)
+    cmd = 'curl --user '..domoticzCredentials..' "http://'..server..'/json.htm?type=devices&order=name&used=true"'
+    handle = assert(io.popen(cmd))
+    devicesJson = handle:read('*all')
+    handle:close()
+    devices = JSON:decode(devicesJson)
+    for i,device in ipairs(devices.result) do
+        if device.BatteryLevel <= BatteryThreshold and device.Name == camera_device_name then
+            print('!! Warning !! Batterie faible pour '..device.Name..' : '..device.BatteryLevel..'% (< '..BatteryThreshold..' %)') 
+        end
+    end
+
+
 
 end
 
