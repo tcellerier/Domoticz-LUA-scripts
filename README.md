@@ -29,6 +29,9 @@
 ### Remote control (Mini RF Wireless Led Dimmer Controller)
 * script_device_telecommande.lua
 
+### Caméra Arlo ###
+* script_device_camera.lua
+
 ### Text to Speech on Synology NAS
 * script_device_tts.lua
 
