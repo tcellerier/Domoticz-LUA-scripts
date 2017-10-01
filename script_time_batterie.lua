@@ -32,6 +32,8 @@ datetime = os.date("*t") -- table is returned containing date & time information
 time_inminutes = 60 * datetime.hour + datetime.min
 
 
+
+
 -- Vérification le weekend à 14h
 if (time_inminutes == 14*60 and (datetime.wday == 7 or datetime.wday == 1)) then 
 
@@ -46,9 +48,7 @@ if (time_inminutes == 14*60 and (datetime.wday == 7 or datetime.wday == 1)) then
 
         -- Si pas de mise à jour du device depuis plus de 24h   
         if (lastupdate_heures > 24) then
-    
             print('!! Warning !! Batterie faible pour '..key..' - Pas de données depuis '..lastupdate_heures..' h '..lastupdate_minutes..' min ('..otherdevices_lastupdate[value]..')') 
-
             -- Notifications subject#body#priority  
             commandArray[i] = {['SendNotification'] = 'Batterie faible#'..key..' - Pas de données depuis '..otherdevices_lastupdate[value]..'#-1' }
             i = i + 1
@@ -57,17 +57,31 @@ if (time_inminutes == 14*60 and (datetime.wday == 7 or datetime.wday == 1)) then
 
 
     -- Vérification de la batterie de la caméra (directement depuis le flux json)
-    cmd = 'curl --user '..domoticzCredentials..' "http://'..server..'/json.htm?type=devices&order=name&used=true"'
-    handle = assert(io.popen(cmd))
-    devicesJson = handle:read('*all')
-    handle:close()
-    devices = JSON:decode(devicesJson)
-    for i,device in ipairs(devices.result) do
-        if device.BatteryLevel <= BatteryThreshold and device.Name == camera_device_name then
-            print('!! Warning !! Batterie faible pour '..device.Name..' : '..device.BatteryLevel..'% (< '..BatteryThreshold..' %)') 
-        end
-    end
+    -- cmd = 'curl --user '..domoticzCredentials..' "http://'..server..'/json.htm?type=devices&order=name&used=true"'
+    -- handle = assert(io.popen(cmd))
+    -- devicesJson = handle:read('*all')
+    -- handle:close()
+    -- devices = JSON:decode(devicesJson)
+    -- for i,device in ipairs(devices.result) do
+    --    if device.BatteryLevel <= BatteryThreshold and device.Name == camera_device_name then
+    --        print('!! Warning !! Batterie faible pour '..device.Name..' : '..device.BatteryLevel..'% (< '..BatteryThreshold..' %)') 
+    --        commandArray[n] = {['SendNotification'] = 'Batterie faible#Caméra Arlo - Batterie '..device.BatteryLevel..' % #-1' }
+    --    end
+    -- end
 
+
+    -- Vérification de la batterie de la caméra à partir du fichier /tmp/arlo_cam1.txt
+    handle = io.popen('cat /tmp/arlo_cam1.txt')
+    battery = handle:read("*a")
+    handle:close()
+    battery = tonumber(battery)
+    if battery == nil then -- Si pas de données au format numérique ou si pas de données
+        battery = 255 
+    end
+    if battery <= BatteryThreshold then
+        print('!! Warning !! Batterie faible pour Caméra Arlo : '..battery..' % (Règle : < '..BatteryThreshold..' %)') 
+        commandArray[n] = {['SendNotification'] = 'Batterie faible#Caméra Arlo - Batterie '..battery..' % #-1' }
+    end
 
 
 end
