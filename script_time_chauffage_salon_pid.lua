@@ -10,7 +10,7 @@ require("library")
 -- Paramètres --
 ----------------
 salon_consigne = uservariables['Var_Chauffage_salon_Consigne']
-dehors_min = 15
+dehors_min = 16
 debug = 0 -- Affiche les logs complets
 ----------------
 ----------------
@@ -36,7 +36,7 @@ SomErreur_nb_val = 10 -- nb valeurs stockées pour SomErreur (* Ki)
 --    si le mode auto est activé 
 --    et si le mode Chauffage consigne Salon est activé
 --    et si la temperature dehors est supérieure au minmium
-if (uservariables['Script_Mode_Maison'] == 'auto' and otherdevices['Chauffage Salon Consigne'] == 'On' and dehors_temp <= dehors_min ) then
+if (uservariables['Script_Mode_Maison'] ~= 'absent' and otherdevices['Chauffage Salon Consigne'] == 'On' and dehors_temp <= dehors_min ) then
 
 
     -- Cycle d'exécution de 3 min
@@ -123,7 +123,7 @@ if (uservariables['Script_Mode_Maison'] == 'auto' and otherdevices['Chauffage Sa
 
 
 -- Sinon si température dehors > Minimum, on coupe le chauffage
-elseif (salon_onoff == 'On' and uservariables['Script_Mode_Maison'] == 'auto' and otherdevices['Chauffage Salon Consigne'] == 'On' and dehors_temp > dehors_min) then
+elseif (salon_onoff == 'On' and uservariables['Script_Mode_Maison'] ~= 'absent' and otherdevices['Chauffage Salon Consigne'] == 'On' and dehors_temp > dehors_min) then
 
     commandArray['Radiateur Salon On/Off'] = 'Off'
     print('----- Chauffage Salon OFF (Temp dehors > minimum) ----- Temp: '..math.round(salon_temp, 2, ','))
