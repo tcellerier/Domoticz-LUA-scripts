@@ -43,7 +43,7 @@ time_inminutes = 60 * datetime.hour + datetime.min
 _, _, alarm1, alarm2 = string.find(uservariables['Var_Alarmclock'], "(%d+):(%d+)") -- extrait heure / minute de la variable alarmclock
 alarmclock_inminutes = 60 * tonumber(alarm1) + tonumber(alarm2)
 min_time_ouverture = math.max(450, math.min(timeofday['SunriseInMinutes'], 540)) -- ouverture des volets à  minimum 7h30 et à maximum 9h
-min_time_fermeture = math.max(1050, timeofday['SunsetInMinutes']) -- fermeture des volets à minimum 17h30  
+min_time_fermeture = math.max(1050, timeofday['SunsetInMinutes'] + 30) -- fermeture des volets à minimum 17h30  
 temp_dehors = otherdevices_temperature['Temp dehors'] or 10
 temp_chambre = otherdevices_temperature['Temp chambre'] or 18
 humdite_dehors = otherdevices_humidity['Temp dehors'] or 60
@@ -67,9 +67,9 @@ end
 -- Définition des paramètres à afficher sur le dashboard (doit être aligné avec les règles codées ci-après)
 if (uservariables['Script_Mode_Volets'] == 'canicule' and uservariables['Script_Mode_Maison'] ~= 'manuel' and uservariables['Script_Mode_Volets'] ~= 'manuel') then
     commandArray['Variable:Info_VoletsSalonOn'] = tostring(min_time_ouverture - 90)
-    commandArray['Variable:Info_VoletsSalonOff'] = tostring(min_time_fermeture + 122)
+    commandArray['Variable:Info_VoletsSalonOff'] = tostring(min_time_fermeture + 120)
     commandArray['Variable:Info_VoletsChambreOff'] = tostring(min_time_fermeture + 121)
-    commandArray['Variable:Info_VoletsSdbOff'] = tostring(min_time_fermeture + 120)
+    commandArray['Variable:Info_VoletsSdbOff'] = tostring(min_time_fermeture + 122)
 elseif (uservariables['Script_Mode_Maison'] ~= 'manuel' and uservariables['Script_Mode_Volets'] ~= 'manuel') then
     if (uservariables['Script_Mode_VoletsTardifs'] == 'off') then
         commandArray['Variable:Info_VoletsSalonOn'] =  tostring(min_time_ouverture)
@@ -92,7 +92,7 @@ if (otherdevices['Alarm Clock Weekdays'] == 'On' and uservariables['Script_Mode_
 else
     commandArray['Variable:Info_VoletsSdbOffWeekMorning'] = tostring(-1)
 end
-if (otherdevices['Alarm Clock Weekdays'] == 'On' and uservariables['Script_Mode_Maison'] == 'auto' and alarmclock_inminutes >=  timeofday['SunriseInMinutes'] and temp_dehors >= 0 and uservariables['Script_Mode_Maison'] ~= 'manuel' and uservariables['Script_Mode_Volets'] ~= 'manuel') then
+if (otherdevices['Alarm Clock Weekdays'] == 'On' and uservariables['Script_Mode_Maison'] == 'auto' and alarmclock_inminutes >= timeofday['SunriseInMinutes'] and temp_dehors >= 0 and uservariables['Script_Mode_Maison'] ~= 'manuel' and uservariables['Script_Mode_Volets'] ~= 'manuel') then
     commandArray['Variable:Info_VoletsSdbOnWeekMorning'] = tostring(alarmclock_inminutes)
 else
     commandArray['Variable:Info_VoletsSdbOnWeekMorning'] = tostring(-1)
@@ -122,7 +122,7 @@ if (uservariables['Script_Mode_Maison'] ~= 'manuel' and uservariables['Script_Mo
     if (uservariables['Script_Mode_Volets'] ~= 'canicule' ) then
     
         -- Ouverture Volets salon 
-        --   a. Si Mode_VoletsTardifs = Off, tous les jours le matin au lever du soleil + 20 min
+        --   a. Si Mode_VoletsTardifs = Off, tous les jours le matin au lever du soleil 
         --   b. Si Mode_VoletsTardifs = On, à 9h en semaine uniquement
         if (uservariables['Script_Mode_VoletsTardifs'] == 'off' and time_inminutes == min_time_ouverture 
             or uservariables['Script_Mode_VoletsTardifs'] == 'on' and time_inminutes == 540 and datetime.wday ~= 7 and datetime.wday ~= 1 and is_jour_ferie == 0) then
@@ -160,7 +160,7 @@ if (uservariables['Script_Mode_Maison'] ~= 'manuel' and uservariables['Script_Mo
         end
 
         -- Fermeture Volets salon le soir
-        if (time_inminutes == min_time_fermeture + 122) then
+        if (time_inminutes == min_time_fermeture + 120) then
             commandArray['Volets Salon'] = "Off"
             print('----- Fermeture automatique volets salon le soir ----- regle : Mode Canicule On (+120min) ')
         end
@@ -172,7 +172,7 @@ if (uservariables['Script_Mode_Maison'] ~= 'manuel' and uservariables['Script_Mo
         end
 
         -- Fermeture Volet sdb le soir 120min après coucher du soleil s'ils sont encore ouverts
-        if (otherdevices['Volets sdb'] == 'Open' and time_inminutes == 120 + min_time_fermeture) then
+        if (otherdevices['Volets sdb'] == 'Open' and time_inminutes == 122 + min_time_fermeture) then
             tts_function('Fermeture volets salle de bain dans les 10 minutes')
             commandArray['Volets sdb'] = "Off RANDOM 10"
             print('----- Fermeture automatique volets sdb tous les soirs ----- regle : Mode Canicule On, Off RANDOM 10')
@@ -183,7 +183,7 @@ if (uservariables['Script_Mode_Maison'] ~= 'manuel' and uservariables['Script_Mo
         --      si temp extérieure + 1 <= temp chambre et si lumière eteinte
         --      si temperature chambre >= 20 et humidité extérieure < 70
         --      si pas de changement des volets dans la derniere heure
-        --      avant 23h et 30 min après réveil si en semaine sinon après 14h
+        --      avant 23h, et 30 min après réveil si en semaine sinon après 14h
         if (otherdevices['Volets Chambre'] == 'Closed' and otherdevices['Lampe Chambre RGBW'] == 'Off' 
           and temp_dehors + 1 <= temp_chambre 
           and datetime.hour < 23
@@ -296,7 +296,7 @@ if (uservariables['Script_Mode_Maison'] ~= 'manuel' and uservariables['Script_Mo
     -- weekend -- 
     if (datetime.wday == 7 or datetime.wday == 1 or is_jour_ferie == 1) then
 
-        -- Uniquement si mode absent activé => Ouverture Volet chambre weekend à  10h 
+        -- Uniquement si mode absent activé => Ouverture Volet chambre weekend à 10h 
         if (uservariables['Script_Mode_Maison'] == 'absent' and time_inminutes == 60*10) then
             commandArray['Volets Chambre'] = "On"
             print('----- Ouverture automatique volets chambre weekend  ----- regle : à  10h si mode absent activé')
