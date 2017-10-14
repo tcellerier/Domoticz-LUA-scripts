@@ -63,7 +63,7 @@ elseif (devicechanged['Volets Salon Droit'] == 'Closed') then
 end
 
 
--- Ouverture volet Chambre  (On active le mode présence en parallèle)
+-- Ouverture volet Chambre 
 if (devicechanged['Volets Chambre'] == 'Open') then 
     if(uservariables['Script_Volets_chambre'] == 'closed' or timedifference(uservariables_lastupdate['Script_Volets_chambre']) < force_diff_sec) then
         commandArray['GPIO 24 blanc'] = 'Off'
@@ -79,7 +79,7 @@ elseif (devicechanged['Volets Chambre'] == 'Closed') then
 end
 
 
--- Ouverture volet sdb 
+-- Ouverture volet sdb  (On active le mode présence en parallèle)
 if (devicechanged['Volets sdb'] == 'Open') then 
     if (uservariables['Script_Volets_sdb'] == 'closed' or timedifference(uservariables_lastupdate['Script_Volets_sdb']) < force_diff_sec) then
         commandArray['GPIO 17 orange'] = 'Off'
