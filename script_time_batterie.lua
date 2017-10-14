@@ -1,6 +1,6 @@
 -------------------------------------------------------------
 -- Script de vérification de mise à jour des devices 
--- Envoie alerte 2 fois par semaine si pas de mise à jour d'un device depuis + de 24h 
+-- Envoie alerte 2 fois par semaine si pas de mise à jour d'un device depuis + de 24h ou si batterie caméra < X %
 ------------------------------------------------------------ 
 
 package.path = package.path .. ';' .. '/home/pi/domoticz/scripts/lua/?.lua' 
@@ -62,10 +62,10 @@ if (time_inminutes == 14*60 and (datetime.wday == 7 or datetime.wday == 1)) then
     -- devicesJson = handle:read('*all')
     -- handle:close()
     -- devices = JSON:decode(devicesJson)
-    -- for i,device in ipairs(devices.result) do
+    -- for j,device in ipairs(devices.result) do
     --    if device.BatteryLevel <= BatteryThreshold and device.Name == camera_device_name then
     --        print('!! Warning !! Batterie faible pour '..device.Name..' : '..device.BatteryLevel..'% (< '..BatteryThreshold..' %)') 
-    --        commandArray[n] = {['SendNotification'] = 'Batterie faible#Caméra Arlo - Batterie '..device.BatteryLevel..' % #-1' }
+    --        commandArray[i+j] = {['SendNotification'] = 'Batterie faible#Caméra Arlo - Batterie '..device.BatteryLevel..' % #-1' }
     --    end
     -- end
 
@@ -80,7 +80,7 @@ if (time_inminutes == 14*60 and (datetime.wday == 7 or datetime.wday == 1)) then
     end
     if battery <= BatteryThreshold then
         print('!! Warning !! Batterie faible pour Caméra Arlo : '..battery..' % (Règle : < '..BatteryThreshold..' %)') 
-        commandArray[n] = {['SendNotification'] = 'Batterie faible#Caméra Arlo - Batterie '..battery..' % #-1' }
+        commandArray[i] = {['SendNotification'] = 'Batterie faible#Caméra Arlo - Batterie '..battery..' % #-1' }
     end
 
 
