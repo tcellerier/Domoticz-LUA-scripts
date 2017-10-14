@@ -9,23 +9,21 @@ require("library")
 
 commandArray = {}
 
-
 script_arlo = "python3 /home/pi/domoticz/scripts/python/arlo.py"
-
 
 
 if (devicechanged['Camera'] == 'On') then
 	
     print('-- Script Python -- Camera Arlo Armed')
-    batterie = os.execute(script_arlo .. ' On &')
-    tts_function('Caméra armée')
+    os.execute(script_arlo .. ' On &')
+    tts_function('Surveillance caméra activée')
 
 
 elseif (devicechanged['Camera'] == 'Off') then 
 
     print('-- Script Python -- Camera Arlo Disarmed')
-    batterie = os.execute(script_arlo .. ' Off &')
-    tts_function('Caméra désarmée')
+    os.execute(script_arlo .. ' Off &')
+    tts_function('Surveillance caméra désactivée')
 
 end
 
