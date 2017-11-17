@@ -63,44 +63,66 @@ end
 
 
 
-
--- Définition des paramètres à afficher sur le dashboard (doit être aligné avec les règles codées ci-après)
+-- Définition des paramètres à afficher sur le dashboard (doit être aligné avec les règles codées plus loin dans le code)
 if (uservariables['Script_Mode_Volets'] == 'canicule' and uservariables['Script_Mode_Maison'] ~= 'manuel' and uservariables['Script_Mode_Volets'] ~= 'manuel') then
-    commandArray['Variable:Info_VoletsSalonOn'] = tostring(min_time_ouverture - 90)
-    commandArray['Variable:Info_VoletsSalonOff'] = tostring(min_time_fermeture + 120)
-    commandArray['Variable:Info_VoletsChambreOff'] = tostring(min_time_fermeture + 121)
-    commandArray['Variable:Info_VoletsSdbOff'] = tostring(min_time_fermeture + 122)
+    Variable_Info_VoletsSalonOn = min_time_ouverture - 90
+    Variable_Info_VoletsSalonOff = min_time_fermeture + 120
+    Variable_Info_VoletsChambreOff = min_time_fermeture + 121
+    Variable_Info_VoletsSdbOff = min_time_fermeture + 122
 elseif (uservariables['Script_Mode_Maison'] ~= 'manuel' and uservariables['Script_Mode_Volets'] ~= 'manuel') then
     if (uservariables['Script_Mode_VoletsTardifs'] == 'off') then
-        commandArray['Variable:Info_VoletsSalonOn'] =  tostring(min_time_ouverture)
+        Variable_Info_VoletsSalonOn =  min_time_ouverture
     elseif (uservariables['Script_Mode_VoletsTardifs'] == 'on' and datetime.wday ~= 7 and datetime.wday ~= 1 and is_jour_ferie == 0) then
-        commandArray['Variable:Info_VoletsSalonOn'] = tostring(9 * 60)
+        Variable_Info_VoletsSalonOn = 9 * 60
     else
-        commandArray['Variable:Info_VoletsSalonOn'] = tostring(-1)
+        Variable_Info_VoletsSalonOn = -1
     end
-    commandArray['Variable:Info_VoletsSalonOff'] = tostring(min_time_fermeture + 1)
-    commandArray['Variable:Info_VoletsChambreOff'] = tostring(min_time_fermeture)
-    commandArray['Variable:Info_VoletsSdbOff'] = tostring(min_time_fermeture - 30)
+    Variable_Info_VoletsSalonOff = min_time_fermeture + 1
+    Variable_Info_VoletsChambreOff = min_time_fermeture
+    Variable_Info_VoletsSdbOff = min_time_fermeture - 30
 else 
-    commandArray['Variable:Info_VoletsSalonOff'] = tostring(-1)
-    commandArray['Variable:Info_VoletsChambreOff'] = tostring(-1)
-    commandArray['Variable:Info_VoletsSdbOff'] = tostring(-1)
-    commandArray['Variable:Info_VoletsSalonOn'] =  tostring(-1)
+    Variable_Info_VoletsSalonOff = -1
+    Variable_Info_VoletsChambreOff = -1
+    Variable_Info_VoletsSdbOff = -1
+    Variable_Info_VoletsSalonOn =  -1
 end
 if (otherdevices['Alarm Clock Weekdays'] == 'On' and uservariables['Script_Mode_Maison'] ~= 'manuel' and uservariables['Script_Mode_Volets'] ~= 'manuel') then
-    commandArray['Variable:Info_VoletsSdbOffWeekMorning'] = tostring(alarmclock_inminutes + volets_sdb_on_weekdays)
+    Variable_Info_VoletsSdbOffWeekMorning = alarmclock_inminutes + volets_sdb_on_weekdays
 else
-    commandArray['Variable:Info_VoletsSdbOffWeekMorning'] = tostring(-1)
+    Variable_Info_VoletsSdbOffWeekMorning = -1
 end
-if (otherdevices['Alarm Clock Weekdays'] == 'On' and uservariables['Script_Mode_Maison'] == 'auto' and alarmclock_inminutes >= timeofday['SunriseInMinutes'] and temp_dehors >= 0 and uservariables['Script_Mode_Maison'] ~= 'manuel' and uservariables['Script_Mode_Volets'] ~= 'manuel') then
-    commandArray['Variable:Info_VoletsSdbOnWeekMorning'] = tostring(alarmclock_inminutes)
+if (otherdevices['Alarm Clock Weekdays'] == 'On' and uservariables['Script_Mode_Maison'] == 'auto' and alarmclock_inminutes >= timeofday['SunriseInMinutes'] - 30 and temp_dehors >= 0 and uservariables['Script_Mode_Maison'] ~= 'manuel' and uservariables['Script_Mode_Volets'] ~= 'manuel') then
+    Variable_Info_VoletsSdbOnWeekMorning = alarmclock_inminutes
 else
-    commandArray['Variable:Info_VoletsSdbOnWeekMorning'] = tostring(-1)
+    Variable_Info_VoletsSdbOnWeekMorning = -1
 end
 if ((otherdevices['Alarm Clock Weekdays'] == 'On' or uservariables['Script_Mode_Maison'] == 'absent')  and uservariables['Script_Mode_Volets'] ~= 'canicule' and temp_dehors >= 5 and uservariables['Script_Mode_Maison'] ~= 'manuel' and uservariables['Script_Mode_Volets'] ~= 'manuel') then
-    commandArray['Variable:Info_VoletsChambreOnWeek'] = tostring(alarmclock_inminutes + 30)
+    Variable_Info_VoletsChambreOnWeek = alarmclock_inminutes + 30
 else
-    commandArray['Variable:Info_VoletsChambreOnWeek'] = tostring(-1)
+    Variable_Info_VoletsChambreOnWeek = -1
+end
+
+
+if uservariables['Info_VoletsSalonOn'] ~= Variable_Info_VoletsSalonOn then
+    commandArray['Variable:Info_VoletsSalonOn'] = tostring(Variable_Info_VoletsSalonOn )
+end
+if uservariables['Info_VoletsSalonOff'] ~= Variable_Info_VoletsSalonOff then
+    commandArray['Variable:Info_VoletsSalonOff'] = tostring(Variable_Info_VoletsSalonOff)
+end
+if uservariables['Info_VoletsChambreOnWeek'] ~= Variable_Info_VoletsChambreOnWeek then
+    commandArray['Variable:Info_VoletsChambreOnWeek'] = tostring(Variable_Info_VoletsChambreOnWeek) 
+end
+if uservariables['Info_VoletsChambreOff'] ~= Variable_Info_VoletsChambreOff then
+    commandArray['Variable:Info_VoletsChambreOff'] = tostring(Variable_Info_VoletsChambreOff)
+end
+if uservariables['Info_VoletsSdbOnWeekMorning'] ~= Variable_Info_VoletsSdbOnWeekMorning then
+    commandArray['Variable:Info_VoletsSdbOnWeekMorning'] = tostring(Variable_Info_VoletsSdbOnWeekMorning)
+end
+if uservariables['Info_VoletsSdbOffWeekMorning'] ~= Variable_Info_VoletsSdbOffWeekMorning then
+    commandArray['Variable:Info_VoletsSdbOffWeekMorning'] = tostring(Variable_Info_VoletsSdbOffWeekMorning)
+end
+if uservariables['Info_VoletsSdbOff'] ~= Variable_Info_VoletsSdbOff then
+    commandArray['Variable:Info_VoletsSdbOff'] = tostring(Variable_Info_VoletsSdbOff )
 end
 ---------------------------------------------------------------------------------------------------------------
 
@@ -272,10 +294,10 @@ if (uservariables['Script_Mode_Maison'] ~= 'manuel' and uservariables['Script_Mo
     
         -- Ouverture Volet sdb le matin en semaine
         --    uniquement si mode Domoticz auto
-        --    uniquement si le reveil est après le lever du soleil
+        --    uniquement si le reveil est au moins 30 min avant le lever du soleil
         --    uniquement si temperature exterieure >= 0° 
         if (otherdevices['Alarm Clock Weekdays'] == 'On' and uservariables['Script_Mode_Maison'] == 'auto'
-            and alarmclock_inminutes >=  timeofday['SunriseInMinutes'] and time_inminutes == alarmclock_inminutes
+            and alarmclock_inminutes >=  timeofday['SunriseInMinutes'] - 30  and time_inminutes == alarmclock_inminutes
             and temp_dehors >= 0 ) then
                 commandArray['Volets sdb'] = 'On' 
                 print('----- Ouverture automatique volets sdb le matin en semaine ----- regle : On at alarmclock')
