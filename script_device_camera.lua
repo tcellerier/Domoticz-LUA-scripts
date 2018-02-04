@@ -9,21 +9,30 @@ require("library")
 
 commandArray = {}
 
-script_arlo = "python3 /home/pi/domoticz/scripts/python/arlo.py"
+script_arlo_on = "python3 /home/pi/domoticz/scripts/python/arlo.py On"
+script_arlo_off = "python3 /home/pi/domoticz/scripts/python/arlo.py Off"
+
+if (otherdevices['Camera'] == 'On') then
+
+    print('-- Script Python -- Camera Arlo Armed (delay 3min)')
+    
+    commandArray['Wall Plug'] = 'On'
+    os.execute('pkill -f "'..script_arlo_off..'"')
+    os.execute('sleep 180 && '..script_arlo_on..' &')
+
+    tts_function('Caméra activée')
 
 
-if (devicechanged['Camera'] == 'On') then
-	
-    print('-- Script Python -- Camera Arlo Armed')
-    os.execute(script_arlo .. ' On &')
-    tts_function('Surveillance caméra activée')
+-- On coupe la caméra dès détection de présence dans script_variable_all
+elseif (otherdevices['Camera'] == 'Off') then 
 
+    print('-- Script Python -- Camera Arlo Disarmed (delay 5min)')
+    
+    os.execute('pkill -f "'..script_arlo_on..'"')
+    os.execute(script_arlo_off..' &')
+    commandArray['Wall Plug'] = "Off AFTER 300"  -- On coupe l'alimentation après avoir correctement désarmé la caméra
 
-elseif (devicechanged['Camera'] == 'Off') then 
-
-    print('-- Script Python -- Camera Arlo Disarmed')
-    os.execute(script_arlo .. ' Off &')
-    tts_function('Surveillance caméra désactivée')
+    tts_function('Caméra off')
 
 end
 
