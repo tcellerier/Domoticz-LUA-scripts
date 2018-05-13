@@ -18,7 +18,12 @@ elseif (uservariablechanged['Script_Mode_Maison'] == 'manuel') then
 
 
 elseif (uservariablechanged['Script_Mode_Maison'] == 'absent') then
-    tts_function('Mode absent')
+    
+    if (otherdevices['Camera'] == 'Off') then
+        tts_function('Mode Absent. Caméra activée dans 15 minutes')
+    else
+        tts_function('Mode Absent')
+    end
 
     -- on coupe tous les chauffages s'ils etaient actifs au moment de l'activation
     commandArray['Radiateur Salon On/Off'] = 'Off'
@@ -27,24 +32,27 @@ elseif (uservariablechanged['Script_Mode_Maison'] == 'absent') then
     
     -- On ferme le volet de la salle de bain
     commandArray['Volets sdb'] = 'Off'
-
-    -- On active la caméra au bout de 30 min
-    if (otherdevices['Camera'] == 'Off') then
-        commandArray['Camera'] = 'On AFTER 1800'
-        tts_function('Caméra armée dans 30 minutes')
-    end
     
 
 elseif (uservariablechanged['Script_Mode_Volets'] == 'auto' and uservariables['Script_Mode_VoletsTardifs'] == 'off') then
     tts_function('Volets Auto')
 elseif (uservariablechanged['Script_Mode_Volets'] == 'auto' and uservariables['Script_Mode_VoletsTardifs'] == 'on') then
-    tts_function('Volets Tardif Auto')
+    tts_function('Volets Auto Tardif')
 
 elseif (uservariablechanged['Script_Mode_Volets'] == 'manuel') then
     tts_function('Volets Manuel')
 
 elseif (uservariablechanged['Script_Mode_Volets'] == 'canicule') then
     tts_function('Volets auto canicule')
+
+
+-- On coupe la caméra dès détection de présence
+elseif (uservariablechanged['Script_Presence_Maison'] and uservariables['Script_Mode_Maison'] ~= 'manuel') then
+
+    Script_Presence_Maison = tonumber(uservariablechanged['Script_Presence_Maison']) or 0
+    if (Script_Presence_Maison >= 1 and otherdevices['Camera'] == 'On') then
+        commandArray['Camera'] = 'Off'
+    end
 
 end
 
