@@ -6,7 +6,7 @@
 --   2. Mode Auto
 --        Ouverture volets salon au lever du soleil / Fermeture au coucher
 --   3. Mode Auto Tardif
---        Ouverture volets salon à 9h en semaine et pas d'ouverture le weekend
+--        Ouverture volets salon le matin uniquement si présence détectée
 --   4. Mode absent
 --      => Si activé alors :
 --         pas d'ouverture des volets sdb 
@@ -47,6 +47,7 @@ min_time_fermeture = math.max(1050, timeofday['SunsetInMinutes'] + 30) -- fermet
 temp_dehors = otherdevices_temperature['Temp dehors'] or 10
 temp_chambre = otherdevices_temperature['Temp chambre'] or 18
 humdite_dehors = otherdevices_humidity['Temp dehors'] or 60
+Script_Presence_Maison = tonumber(uservariables['Script_Presence_Maison']) or 0
 ----------------------
 
 -- On détermine si on est un jour ferie
@@ -72,8 +73,6 @@ if (uservariables['Script_Mode_Volets'] == 'canicule' and uservariables['Script_
 elseif (uservariables['Script_Mode_Maison'] ~= 'manuel' and uservariables['Script_Mode_Volets'] ~= 'manuel') then
     if (uservariables['Script_Mode_VoletsTardifs'] == 'off') then
         Variable_Info_VoletsSalonOn =  min_time_ouverture
-    elseif (uservariables['Script_Mode_VoletsTardifs'] == 'on' and datetime.wday ~= 7 and datetime.wday ~= 1 and is_jour_ferie == 0) then
-        Variable_Info_VoletsSalonOn = 9 * 60
     else
         Variable_Info_VoletsSalonOn = -1
     end
@@ -144,10 +143,10 @@ if (uservariables['Script_Mode_Maison'] ~= 'manuel' and uservariables['Script_Mo
     if (uservariables['Script_Mode_Volets'] ~= 'canicule' ) then
     
         -- Ouverture Volets salon 
-        --   a. Si Mode_VoletsTardifs = Off, tous les jours le matin au lever du soleil 
-        --   b. Si Mode_VoletsTardifs = On, à 9h en semaine uniquement
-        if (uservariables['Script_Mode_VoletsTardifs'] == 'off' and time_inminutes == min_time_ouverture 
-            or uservariables['Script_Mode_VoletsTardifs'] == 'on' and time_inminutes == 540 and datetime.wday ~= 7 and datetime.wday ~= 1 and is_jour_ferie == 0) then
+        --   a. Si Mode_VoletsTardifs = Off ou Mode Absent, tous les jours le matin au lever du soleil 
+        --   b. Si Mode_VoletsTardifs = On, le matin uniquement si présence détectée ou bien sinon à 13h
+        if ( (uservariables['Script_Mode_VoletsTardifs'] == 'off' or uservariables['Script_Mode_Maison'] == 'absent') and time_inminutes == min_time_ouverture 
+            or uservariables['Script_Mode_VoletsTardifs'] == 'on' and timedifference(otherdevices_lastupdate['Volets Salon']) >= 21600 and otherdevices['Volets Salon'] == 'Closed' and (Script_Presence_Maison >= 1 and time_inminutes >= min_time_ouverture and datetime.hour < 12 or datetime.hour == 13) ) then
             commandArray['Volets Salon'] = "On"
             print('----- Ouverture automatique volets salon le matin -----')
         end
@@ -238,17 +237,17 @@ if (uservariables['Script_Mode_Maison'] ~= 'manuel' and uservariables['Script_Mo
     --     lorsqu'il y a une presence (Script_Presence_Maison = 1)
     --     uniquement si heure comprise entre 10h et 1h avant Sunset
     --     uniquement si temperature exterieur > 5°C
-    if (uservariables['Script_Mode_Maison'] == 'auto'  and otherdevices['Volets sdb'] == 'Closed' and uservariables['Script_Presence_Maison'] >= 1
+    if (uservariables['Script_Mode_Maison'] == 'auto'  and otherdevices['Volets sdb'] == 'Closed' and Script_Presence_Maison >= 1
         and timedifference(otherdevices_lastupdate['Volets sdb']) >= 3600  
         and datetime.hour >= 10 and time_inminutes <  min_time_fermeture - 60
         and temp_dehors >= 5 ) then
         tts_function('Ouverture volets salle de bain')
-        commandArray['Volets sdb'] = 'On AFTER 3'
+        commandArray['Volets sdb'] = 'On AFTER 5'
         print('----- Ouverture automatique volets sdb la journée ----- regle : Présence détectée')
     end
 
     -- Fermeture Volet sdb si pas de présence (variable Script_Presence_Maison = 0)
-    if (otherdevices['Volets sdb'] == 'Open' and uservariables['Script_Presence_Maison'] == 0
+    if (otherdevices['Volets sdb'] == 'Open' and Script_Presence_Maison == 0
         and datetime.hour >= 10) then
         tts_function('Fermeture volets salle de bain')
         commandArray['Volets sdb'] = 'Off AFTER 15'
@@ -297,16 +296,22 @@ if (uservariables['Script_Mode_Maison'] ~= 'manuel' and uservariables['Script_Mo
         --    uniquement si le reveil est au moins 30 min avant le lever du soleil
         --    uniquement si temperature exterieure >= 0° 
         if (otherdevices['Alarm Clock Weekdays'] == 'On' and uservariables['Script_Mode_Maison'] == 'auto'
-            and alarmclock_inminutes >=  timeofday['SunriseInMinutes'] - 30  and time_inminutes == alarmclock_inminutes
-            and temp_dehors >= 0 ) then
-                commandArray['Volets sdb'] = 'On' 
-                print('----- Ouverture automatique volets sdb le matin en semaine ----- regle : On at alarmclock')
+            and alarmclock_inminutes >=  timeofday['SunriseInMinutes'] - 30  and time_inminutes == alarmclock_inminutes ) then
+                
+                if (temp_dehors >= 5) then
+                    commandArray['Volets sdb'] = 'On' 
+                    print('----- Ouverture automatique volets sdb le matin en semaine ----- regle : On at alarmclock')
+                elseif (temp_dehors >= 0) then
+                    commandArray[1] = {['Volets sdb'] = 'On'}
+                    commandArray[2] = {['Volets sdb'] = 'On AFTER 8'} -- Ouverture à moitié (ne marche pas très bien. A cause d'interférences quand le volet s'ouvre ?)
+                    print('----- Ouverture automatique volets sdb le matin en semaine ----- regle : On at alarmclock')
+                end
         end
 
         -- Fermeture Volet sdb le matin en semaine
         if (otherdevices['Alarm Clock Weekdays'] == 'On' and otherdevices['Volets sdb'] == 'Open' 
            and time_inminutes == alarmclock_inminutes + volets_sdb_on_weekdays
-           and uservariables['Script_Presence_Maison'] == 0) then
+           and Script_Presence_Maison == 0) then
                 tts_function('Fermeture volet salle de bain')
                 commandArray['Volets sdb'] = 'Off AFTER 5'
                 print('----- Fermeture automatique volets sdb le matin en semaine ----- regle : Off '..volets_sdb_on_weekdays..' min after alarmclock')
@@ -326,5 +331,6 @@ if (uservariables['Script_Mode_Maison'] ~= 'manuel' and uservariables['Script_Mo
     end
 
 end
+
 
 return commandArray
