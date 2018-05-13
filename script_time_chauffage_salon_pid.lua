@@ -27,6 +27,7 @@ time_inminutes = 60 * datetime.hour + datetime.min
 salon_onoff = otherdevices['Radiateur Salon On/Off']
 dehors_temp = otherdevices_temperature['Temp dehors'] or 10
 salon_temp = otherdevices_temperature['Temp salon'] or 18
+salon_temp_timediff = timedifference(otherdevices_lastupdate['Temp salon'])
 
 SomErreur_nb_val = 10 -- nb valeurs stockées pour SomErreur (* Ki)
 
@@ -98,6 +99,9 @@ if (uservariables['Script_Mode_Maison'] ~= 'absent' and otherdevices['Chauffage 
             CmdChauff = 100
         end
 
+        -- Stockage pour affichage dans tablette
+        commandArray['Variable:Info_Chauffage_Pourcentage'] = tostring(CmdChauff)
+
         -- Calcul du temps de cycle en seconde (x1.8 pour des cycles de 3min)
         CycleChauff = math.floor(CmdChauff * 1.8)
 
@@ -106,12 +110,12 @@ if (uservariables['Script_Mode_Maison'] ~= 'absent' and otherdevices['Chauffage 
             commandArray['Radiateur Salon On/Off'] = 'Off'
             print('----- PID - Chauffage Salon OFF (CmdChauff = 0 %) ----- Temp: '..math.round(salon_temp, 2, ','))
         
-        elseif (CmdChauff >= 100 and salon_onoff == 'Off') then
+        elseif (CmdChauff >= 100 and salon_onoff == 'Off' and salon_temp_timediff < 7200) then  -- uniquement si la température a été mise à jour dans les 2 dernières heures
             commandArray['Radiateur Salon On/Off'] = 'On'
             print('----- PID - Chauffage Salon On (CmdChauff = 100 %) ----- Temp: '..math.round(salon_temp, 2, ','))      
 
-        elseif (CmdChauff > 0 and CmdChauff < 100) then
-            if (salon_onoff == 'Off') then
+        elseif (CmdChauff > 0 and CmdChauff < 100) then  
+            if (salon_onoff == 'Off' and salon_temp_timediff < 7200) then -- uniquement si la température a été mise à jour dans les 2 dernières heures
                 commandArray[1] = {['Radiateur Salon On/Off'] = 'On'}
             end 
             commandArray[2]= {['Radiateur Salon On/Off'] = 'Off AFTER '..CycleChauff}
