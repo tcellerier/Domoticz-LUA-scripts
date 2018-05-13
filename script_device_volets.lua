@@ -22,12 +22,12 @@ commandArray = {}
 -- Ouverture des 2 volets salon
 if (devicechanged['Volets Salon'] == 'Open') then
     commandArray['Volets Salon Gauche'] = 'On'
-    commandArray['Volets Salon Droit'] = 'On AFTER 5'
+    commandArray['Volets Salon Droit'] = 'On AFTER 10'
 
 -- Fermeture des 2 volets salon
 elseif (devicechanged['Volets Salon'] == 'Closed') then
     commandArray['Volets Salon Gauche'] = 'Off'
-    commandArray['Volets Salon Droit'] = 'Off AFTER 5'
+    commandArray['Volets Salon Droit'] = 'Off AFTER 10'
 end
 
 
@@ -50,14 +50,14 @@ end
 -- Ouverture volet Salon Droit 
 if (devicechanged['Volets Salon Droit'] == 'Open') then 
     if (uservariables['Script_Volets_salon_droit'] == 'closed' or timedifference(uservariables_lastupdate['Script_Volets_salon_droit']) < force_diff_sec) then
-        commandArray['GPIO 23 violet'] = 'Off'
+        commandArray['GPIO 22 violet'] = 'Off'
     end
         commandArray['Variable:Script_Volets_salon_droit'] = 'open'
 
 -- Fermeture volet Salon Droit 
 elseif (devicechanged['Volets Salon Droit'] == 'Closed') then 
     if(uservariables['Script_Volets_salon_droit'] == 'open' or timedifference(uservariables_lastupdate['Script_Volets_salon_droit']) < force_diff_sec) then
-        commandArray['GPIO 22 bleu'] = 'Off'
+        commandArray['GPIO 23 bleu'] = 'Off'
     end        
     commandArray['Variable:Script_Volets_salon_droit'] = 'closed'
 end
@@ -66,14 +66,14 @@ end
 -- Ouverture volet Chambre 
 if (devicechanged['Volets Chambre'] == 'Open') then 
     if(uservariables['Script_Volets_chambre'] == 'closed' or timedifference(uservariables_lastupdate['Script_Volets_chambre']) < force_diff_sec) then
-        commandArray['GPIO 24 blanc'] = 'Off'
+        commandArray['GPIO 25 blanc'] = 'Off'
     end
     commandArray['Variable:Script_Volets_chambre'] = 'open'
 
 -- Fermeture volet Chambre 
 elseif (devicechanged['Volets Chambre'] == 'Closed') then 
     if (uservariables['Script_Volets_chambre'] == 'open' or timedifference(uservariables_lastupdate['Script_Volets_chambre']) < force_diff_sec) then
-        commandArray['GPIO 25 gris'] = 'Off'
+        commandArray['GPIO 24 gris'] = 'Off'
     end
     commandArray['Variable:Script_Volets_chambre'] = 'closed'
 end
@@ -85,13 +85,11 @@ if (devicechanged['Volets sdb'] == 'Open') then
         commandArray['GPIO 17 orange'] = 'Off'
     end
     commandArray['Variable:Script_Volets_sdb'] = 'open'
-    commandArray['Variable:Script_Presence_Maison'] = '1'
-    print('----- Présence confirmée manuellement via l\'ouverture du volet salle de bain')
 
 -- Fermeture volet sdb 
 elseif (devicechanged['Volets sdb'] == 'Closed') then 
     if (uservariables['Script_Volets_sdb'] == 'open' or timedifference(uservariables_lastupdate['Script_Volets_sdb']) < force_diff_sec) then
-        commandArray['GPIO 3 rouge'] = 'Off'
+        commandArray['GPIO 4 rouge'] = 'Off'
     end
     commandArray['Variable:Script_Volets_sdb'] = 'closed'
 end
