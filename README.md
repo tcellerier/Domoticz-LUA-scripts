@@ -7,11 +7,11 @@
 
 ### Heating (PID, scheduling ...)
 * script_device_chauffage.lua
+* script_time_chauffage_autoplanification.lua
+* script_time_chauffage_autopresence.lua
 * script_time_chauffage_chambre_consigne.lua
-* script_time_chauffage_salon_auto.lua
 * script_time_chauffage_salon_pid.lua
 * script_time_chauffage_sdb_consigne.lua
-* script_time_chauffage_sdbcha_planif.lua
 
 ### Blinds
 * script_device_volets.lua
@@ -31,6 +31,7 @@
 
 ### Caméra Arlo ###
 * script_device_camera.lua
+* script_time_cameraauto.lua
 
 ### Text to Speech on Synology NAS
 * script_device_tts.lua
