@@ -6,11 +6,10 @@ package.path = package.path .. ';' .. '/home/pi/domoticz/scripts/lua/?.lua'
 require("library")
 
 
-
 commandArray = {}
 
-script_arlo_on = "python3 /home/pi/domoticz/scripts/python/arlo.py On"
-script_arlo_off = "python3 /home/pi/domoticz/scripts/python/arlo.py Off"
+script_arlo_on = "python3 /home/pi/domoticz/scripts/python/arlo.py armed"
+script_arlo_off = "python3 /home/pi/domoticz/scripts/python/arlo.py disarmed"
 
 if (otherdevices['Camera'] == 'On') then
 
