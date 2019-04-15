@@ -8,8 +8,8 @@ require("library")
 
 commandArray = {}
 
-script_arlo_on = "python3 /home/pi/domoticz/scripts/python/arlo.py armed"
-script_arlo_off = "python3 /home/pi/domoticz/scripts/python/arlo.py disarmed"
+script_arlo_on = "python3 /home/pi/domoticz/scripts/python/arlo_cmd.py armed"
+script_arlo_off = "python3 /home/pi/domoticz/scripts/python/arlo_cmd.py disarmed"
 
 if (otherdevices['Camera'] == 'On') then
 
